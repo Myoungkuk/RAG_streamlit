@@ -1,12 +1,23 @@
 import streamlit as st
 import tiktoken
 
-import os   #gemini
-
 from loguru import logger
 
-from langchain.chains import ConversationalRetrievalChain
-from langchain.chat_models import ChatOpenAI
+
+# gemini
+# from dotenv import load_dotenv
+# load_dotenv()
+# import google.generativeai as genai
+# import os
+# genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+# from langchain_google_genai import ChatGoogleGenerativeAI
+
+import google.generativeai as genai
+import os
+
+# from langchain.chains import ConversationalRetrievalChain
+from langchain.chains import RetrievalQA   #gemini
+# from langchain.chat_models import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI   #gemini
 
 from langchain.document_loaders import PyPDFLoader
@@ -139,10 +150,11 @@ def get_vectorstore(text_chunks):
 def get_conversation_chain(vetorestore, gemini_api_key):
     # llm = ChatOpenAI(openai_api_key = openai_api_key, model_name = 'gpt-3.5-turbo', temperature = 0)
     
-    os.environ["GOOGLE_API_KEY"] = "AIzaSyDk0_7GU4FojcOW2Ko_Y2hh9OIK_XbE7-Y"   #gemini
-    llm = ChatGoogleGenerativeAI(model = "gemini-pro")   #gemini
+    genai.configure(api_key=os.environ.get("gemini_api_key"))
+    llm = ChatGoogleGenerativeAI(model = "gemini-pro", temperature = 0)   #gemini
     
-    conversation_chain = ConversationalRetrievalChain.from_llm(
+    # conversation_chain = ConversationalRetrievalChain.from_llm(
+    conversation_chain = RetrievalQA.from_llm(
         llm = llm,
         chain_type = "stuff",
         retriever = vetorestore.as_retriever(search_type = 'mmr', vervose = True),
