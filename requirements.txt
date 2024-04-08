@@ -10,3 +10,4 @@ loguru
 docx2txt
 openai
 genai
+langchain-community
